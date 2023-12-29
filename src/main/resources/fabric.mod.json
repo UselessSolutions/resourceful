@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "id": "examplemod",
+  "id": "resourceful",
   "version": "${version}",
 
-  "name": "Example Mod",
+  "name": "Resourceful",
   "description": "This mod aims to help new BTA modders.",
   "authors": [
     "Turnip Labs"
@@ -18,11 +18,14 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-        "turniplabs.examplemod.ExampleMod"
-    ]
+        "useless.resourceful.Resourceful"
+    ],
+		"afterClientStart": [
+				"useless.resourceful.Resourceful"
+		]
   },
   "mixins": [
-      "examplemod.mixins.json"
+      "resourceful.mixins.json"
   ],
 
   "depends": {
