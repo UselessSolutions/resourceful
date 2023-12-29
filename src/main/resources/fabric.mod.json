@@ -4,9 +4,9 @@
   "version": "${version}",
 
   "name": "Resourceful",
-  "description": "This mod aims to help new BTA modders.",
+  "description": "Implements Modern-like texturepack layering to BTA",
   "authors": [
-    "Turnip Labs"
+    "Useless"
   ],
   "contact": {
     "homepage": "",
@@ -17,9 +17,6 @@
 
   "environment": "*",
   "entrypoints": {
-    "main": [
-        "useless.resourceful.Resourceful"
-    ],
 		"afterClientStart": [
 				"useless.resourceful.Resourceful"
 		]
@@ -32,5 +29,8 @@
     "fabricloader": ">=0.13.3"
   },
   "suggests": {
-  }
+  },
+	"custom": {
+		"modmenu:clientsideOnly": true
+	}
 }

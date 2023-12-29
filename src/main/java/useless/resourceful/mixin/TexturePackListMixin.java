@@ -1,7 +1,5 @@
 package useless.resourceful.mixin;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.render.FontRenderer;
 import net.minecraft.client.render.texturepack.TexturePack;
 import net.minecraft.client.render.texturepack.TexturePackList;
 import org.lwjgl.input.Keyboard;
@@ -15,17 +13,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import useless.resourceful.TexturePackManager;
 
 @Mixin(value = TexturePackList.class, remap = false)
-public class TexturePackListMixin {
+public abstract class TexturePackListMixin {
 	@Shadow
 	@Final
 	private TexturePack defaultTexturePack;
-
-	@Shadow
-	@Final
-	private Minecraft mc;
-	@Shadow
-	private String currentTexturePackName;
-
 	@Shadow
 	public TexturePack selectedTexturePack;
 
@@ -38,13 +29,9 @@ public class TexturePackListMixin {
 			return;
 		}
 		if (newPack != defaultTexturePack && !TexturePackManager.selectedPacks.contains(newPack)){
-			TexturePackManager.selectedPacks.add(newPack);
-
-			this.currentTexturePackName = "";
-			this.mc.gameSettings.skin.value = this.currentTexturePackName;
-			this.mc.gameSettings.saveOptions();
-			newPack.readZipFile();
-			TexturePackManager.refreshTextures();
+			TexturePackManager.addPack(newPack);
+			ci.cancel();
+			return;
 		}
 		ci.cancel();
 	}

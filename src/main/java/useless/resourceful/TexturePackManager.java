@@ -7,6 +7,7 @@ import net.minecraft.client.render.texturepack.TexturePack;
 import net.minecraft.client.render.texturepack.TexturePackCustom;
 import net.minecraft.client.render.texturepack.TexturePackDefault;
 import useless.resourceful.mixin.TexturePackCustomAccessor;
+import useless.resourceful.mixin.TexturePackListAccessor;
 
 import java.io.File;
 import java.io.InputStream;
@@ -23,6 +24,15 @@ public class TexturePackManager extends TexturePack {
 		this.manifest = new Manifest(null, Objects.requireNonNull(TexturePackDefault.class.getResourceAsStream("/manifest.json")));
 	}
 	public static List<TexturePack> selectedPacks = new ArrayList<>();
+	public static void addPack(TexturePack pack){
+		TexturePackManager.selectedPacks.add(0,pack);
+
+		((TexturePackListAccessor)mc.texturePackList).setCurrentTexturePackName("");;
+		mc.gameSettings.skin.value = ((TexturePackListAccessor)mc.texturePackList).getCurrentTexturePackName();
+		mc.gameSettings.saveOptions();
+		pack.readZipFile();
+		TexturePackManager.refreshTextures();
+	}
 	public static void removePack(TexturePack pack){
 		selectedPacks.remove(pack);
 		pack.closeTexturePackFile();

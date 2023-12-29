@@ -4,10 +4,12 @@
   "package": "useless.resourceful.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "TexturePackCustomAccessor",
-    "TexturePackListMixin"
   ],
   "client": [
+    "OptionsCategoryAccessor",
+    "TexturePackCustomAccessor",
+    "TexturePackListAccessor",
+    "TexturePackListMixin"
   ],
   "injectors": {
     "defaultRequire": 1
