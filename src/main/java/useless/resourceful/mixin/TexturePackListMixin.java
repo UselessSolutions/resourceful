@@ -4,6 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.render.FontRenderer;
 import net.minecraft.client.render.texturepack.TexturePack;
 import net.minecraft.client.render.texturepack.TexturePackList;
+import org.lwjgl.input.Keyboard;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -31,6 +32,11 @@ public class TexturePackListMixin {
 	@Inject(method = "setTexturePack(Lnet/minecraft/client/render/texturepack/TexturePack;)V", at = @At("HEAD"), cancellable = true)
 	private void customTexturepackBehavior(TexturePack newPack, CallbackInfo ci){
 		selectedTexturePack = new TexturePackManager();
+		if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)){
+			TexturePackManager.removePack(newPack);
+			ci.cancel();
+			return;
+		}
 		if (newPack != defaultTexturePack && !TexturePackManager.selectedPacks.contains(newPack)){
 			TexturePackManager.selectedPacks.add(newPack);
 
@@ -38,11 +44,7 @@ public class TexturePackListMixin {
 			this.mc.gameSettings.skin.value = this.currentTexturePackName;
 			this.mc.gameSettings.saveOptions();
 			newPack.readZipFile();
-			this.mc.fontRenderer = new FontRenderer(this.mc.gameSettings, "/font/default.png", this.mc.renderEngine);
-			this.mc.renderEngine.refreshTexturesAndDisplayErrors();
-			this.mc.renderGlobal.loadRenderers();
-			this.mc.currentScreen.refreshFontRenderer();
-			this.mc.renderEngine.updateDynamicTextures();
+			TexturePackManager.refreshTextures();
 		}
 		ci.cancel();
 	}

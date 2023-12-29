@@ -1,5 +1,8 @@
 package useless.resourceful;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.render.FontRenderer;
+import net.minecraft.client.render.texturepack.Manifest;
 import net.minecraft.client.render.texturepack.TexturePack;
 import net.minecraft.client.render.texturepack.TexturePackCustom;
 import net.minecraft.client.render.texturepack.TexturePackDefault;
@@ -10,13 +13,28 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.zip.ZipEntry;
 
 public class TexturePackManager extends TexturePack {
+	public static Minecraft mc = Minecraft.getMinecraft(Minecraft.class);
 	public TexturePackManager() {
-		super();
+		this.fileName = "Manager";
+		this.manifest = new Manifest(null, Objects.requireNonNull(TexturePackDefault.class.getResourceAsStream("/manifest.json")));
 	}
 	public static List<TexturePack> selectedPacks = new ArrayList<>();
+	public static void removePack(TexturePack pack){
+		selectedPacks.remove(pack);
+		pack.closeTexturePackFile();
+		refreshTextures();
+	}
+	public static void refreshTextures(){
+		mc.fontRenderer = new FontRenderer(mc.gameSettings, "/font/default.png", mc.renderEngine);
+		mc.renderEngine.refreshTexturesAndDisplayErrors();
+		mc.renderGlobal.loadRenderers();
+		mc.currentScreen.refreshFontRenderer();
+		mc.renderEngine.updateDynamicTextures();
+	}
 	@Override
 	public boolean hasFile(String string) {
 		for (TexturePack pack : selectedPacks){
