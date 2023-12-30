@@ -68,6 +68,7 @@ public class GuiMultiPack extends GuiScreen {
 	}
 	@Override
 	public void tick() {
+		doubleClickCounter--;
 		++this.updateTickCount;
 		if (this.updateTickCount >= 40) {
 			this.updateTickCount = 0;
@@ -135,6 +136,7 @@ public class GuiMultiPack extends GuiScreen {
 			createButtons();
 		}
 	}
+	private int doubleClickCounter = -1;
 	@Override
 	public void mouseClicked(int mouseX, int mouseY, int mouseButton) {
 		if (mouseButton == 0) {
@@ -147,6 +149,7 @@ public class GuiMultiPack extends GuiScreen {
 					} else {
 						this.buttonPressed(guiButton);
 					}
+					doubleClickCounter = 5;
 					return;
 				}
 			}
@@ -156,18 +159,25 @@ public class GuiMultiPack extends GuiScreen {
             if (!button.mouseClicked(mc, mouseX, mouseY)) continue;
 			if (button.texturePack == mc.texturePackList.getDefaultTexturePack()) continue;
 			selectedTexturePackButton = button;
-//            TexturePackManager.addPack(button.texturePack);
-//            createButtons();
+			if (doubleClickCounter > 0){
+				TexturePackManager.addPack(button.texturePack);
+				createButtons();
+			}
+			doubleClickCounter = 5;
             return;
         }
         for (GuiTexturePackButton button : this.selectedPackButtons) {
             if (!button.mouseClicked(mc, mouseX, mouseY)) continue;
 			if (button.texturePack == mc.texturePackList.getDefaultTexturePack()) continue;
 			selectedTexturePackButton = button;
-//            TexturePackManager.removePack(button.texturePack);
-//            createButtons();
+			if (doubleClickCounter > 0){
+				TexturePackManager.removePack(button.texturePack);
+				createButtons();
+			}
+			doubleClickCounter = 5;
             return;
         }
+		doubleClickCounter = 5;
 	}
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTick) {
