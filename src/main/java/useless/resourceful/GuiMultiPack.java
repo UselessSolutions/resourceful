@@ -17,6 +17,7 @@ import org.lwjgl.opengl.GL11;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class GuiMultiPack extends GuiScreen {
@@ -63,6 +64,7 @@ public class GuiMultiPack extends GuiScreen {
 		this.packButtons.clear();
 		this.selectedPackButtons.clear();
 		List<TexturePack> texturePacks = mc.texturePackList.availableTexturePacks();
+		texturePacks.sort(Comparator.comparing(pack -> pack.fileName));
 
 		for (int i = 0; i < TexturePackManager.selectedPacks.size(); ++i) {
 			TexturePack texturePack = TexturePackManager.selectedPacks.get(i);
