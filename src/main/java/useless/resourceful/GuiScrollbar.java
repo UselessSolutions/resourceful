@@ -7,8 +7,6 @@ import org.lwjgl.opengl.GL11;
 
 public class GuiScrollbar extends GuiButton {
 	public float scrollAreaHeight;
-	private Integer clickX;
-	private Integer clickY;
 	private float scrollAmount = 0;
 	private boolean isHeld = false;
 	private int barPos = 0;
@@ -26,13 +24,19 @@ public class GuiScrollbar extends GuiButton {
 		GL11.glDisable(3553);
 		int scrollBarHeightPx = getScrollBarHeightPixels();
 		int scrollBarY = getScrollBarY();
+		int scrollColorPrimary = 0xC0C0C0;
+		int scrollColorSecondary = 0x808080;
+		if (isHeld){
+			scrollColorPrimary = 0xA0A0C0;
+			scrollColorSecondary = 0x606080;
+		}
 		Tessellator t = Tessellator.instance;
 		t.startDrawingQuads();
 		t.setColorOpaque(0, 0, 0);
 		t.drawRectangle(xPosition, yPosition, 6, height);
-		t.setColorRGBA_I(0x808080, 255);
+		t.setColorRGBA_I(scrollColorSecondary, 255);
 		t.drawRectangle(xPosition, scrollBarY, 6, scrollBarHeightPx);
-		t.setColorRGBA_I(0xC0C0C0, 255);
+		t.setColorRGBA_I(scrollColorPrimary, 255);
 		t.drawRectangle(xPosition + 1, scrollBarY, 5, scrollBarHeightPx - 1);
 		t.draw();
 		GL11.glEnable(3553);
@@ -56,16 +60,12 @@ public class GuiScrollbar extends GuiButton {
 	}
 
 	public void mouseReleased(int mouseX, int mouseY) {
-		clickX = -1;
-		clickY = -1;
 		isHeld = false;
 	}
 
 	public boolean mouseClicked(Minecraft mc, int mouseX, int mouseY) {
 		if (super.mouseClicked(mc, mouseX, mouseY)){
 			if (!isHeld){
-				clickX = mouseX;
-				clickY = mouseY;
 				isHeld = true;
 				int scrollBarHeightPx = getScrollBarHeightPixels();
 				int scrollBarY = getScrollBarY();
