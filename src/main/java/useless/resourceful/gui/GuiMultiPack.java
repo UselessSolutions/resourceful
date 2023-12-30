@@ -10,6 +10,7 @@ import net.minecraft.client.gui.options.data.OptionsPageRegistry;
 import net.minecraft.client.gui.options.data.OptionsPages;
 import net.minecraft.client.gui.popup.GuiPopup;
 import net.minecraft.client.gui.popup.PopupBuilder;
+import net.minecraft.client.render.Scissor;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.texturepack.TexturePack;
 import net.minecraft.core.lang.I18n;
@@ -44,6 +45,8 @@ public class GuiMultiPack extends GuiScreen {
 	protected GuiTexturedButton moveDownButton;
 	protected GuiTexturedButton togglePackButton;
 	protected GuiTexturedButton refreshPackButton;
+	protected GuiTexturedButton menuButton;
+	protected GuiTexturedButton searchButton;
 	private GuiButton pageButton;
 	GuiButton pageLeftButton;
 	GuiButton pageRightButton;
@@ -67,7 +70,7 @@ public class GuiMultiPack extends GuiScreen {
 		this.controlList.add(this.pageButton);
 		this.controlList.add(pageLeftButton);
 		this.controlList.add(pageRightButton);
-		GuiTexturedButton searchButton = new GuiTexturedButton(23, "/gui/gui.png", this.width - 20 - 4, 20, 20, 86, 20, 20);
+		searchButton = new GuiTexturedButton(23, "/gui/gui.png", this.width - 20 - sidePadding, 20, 20, 86, 20, 20);
 		this.controlList.add(searchButton);
 
 		refreshPackButton = new GuiTexturedButton(8, "/assets/resourceful/gui/packManager.png", (width + centerWidth)/2 + (width - centerWidth)/4 - 100, height - 24,100, 0, 20, 20);
@@ -88,6 +91,9 @@ public class GuiMultiPack extends GuiScreen {
 		this.controlList.add(moveDownButton);
 		this.controlList.add(togglePackButton);
 		this.controlList.add(refreshPackButton);
+
+		menuButton = new GuiTexturedButton(9, "/assets/resourceful/gui/packManager.png", sidePadding, 20, 120, 0, 20, 20);
+		this.controlList.add(menuButton);
 
 		createButtons();
 	}
@@ -167,6 +173,9 @@ public class GuiMultiPack extends GuiScreen {
 		}
 		if (button.id == 8){
 			TexturePackManager.refreshTextures(true);
+		}
+		if (button.id == 9){
+			mc.displayGuiScreen(new GuiTexturePackSideBar(this));
 		}
 		if (button.id == 20){
 			String[] buttons = new String[OptionsPageRegistry.getInstance().getPages().size()];
@@ -263,12 +272,12 @@ public class GuiMultiPack extends GuiScreen {
 
 		drawDefaultBackground();
 
-		drawStringCentered(fontRenderer, i18n.translateKey("resourceful.pack.label.available"), pageLeftButton.getX()/2, pageLeftButton.getY() + pageLeftButton.getHeight() - fontRenderer.fontHeight, 0xFFFFFF);
-		drawStringCentered(fontRenderer, i18n.translateKey("resourceful.pack.label.selected"),  width - ((width - pageRightButton.getX())/2), pageRightButton.getY() + pageRightButton.getHeight() - fontRenderer.fontHeight, 0xFFFFFF);
+		drawStringCentered(fontRenderer, i18n.translateKey("resourceful.pack.label.available"), menuButton.getX() + (pageLeftButton.getX() - (menuButton.getX()) + menuButton.getWidth())/2, pageLeftButton.getY() + pageLeftButton.getHeight() - fontRenderer.fontHeight, 0xFFFFFF);
+		drawStringCentered(fontRenderer, i18n.translateKey("resourceful.pack.label.selected"),  pageRightButton.getX() + (searchButton.getX() - (pageRightButton.getX()) + pageRightButton.getWidth())/2, pageRightButton.getY() + pageRightButton.getHeight() - fontRenderer.fontHeight, 0xFFFFFF);
 		super.drawScreen(mouseX, mouseY, partialTick);
 		this.drawStringCentered(this.fontRenderer, i18n.translateKey("gui.options.title"), this.width / 2, 5, 0xFFFFFF);
 		GL11.glEnable(3089);
-		GL11.glScissor(0, (this.height - this.bottom) * mc.resolution.scale, this.width * mc.resolution.scale, this.scrollRegionHeight * mc.resolution.scale);
+		Scissor.enable(0, top, this.width, this.scrollRegionHeight);
 		if (this.packButtons.isEmpty()) {
 			mc.fontRenderer.drawCenteredString(I18n.getInstance().translateKey("gui.options.page.texture_packs.label.no_packs"), (width - centerWidth)/4, top + 4, 0x5F7F7F7F);
 		}
@@ -288,6 +297,7 @@ public class GuiMultiPack extends GuiScreen {
 				drawBoxRoundButton(button);
 			}
 		}
+		Scissor.disable();
 	}
 	private void drawBoxRoundButton(GuiButton button){
 		int color = 0xFFFFFFFF;
