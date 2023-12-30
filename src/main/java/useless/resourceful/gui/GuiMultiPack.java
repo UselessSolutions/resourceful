@@ -37,6 +37,7 @@ public class GuiMultiPack extends GuiScreen {
 	protected GuiTexturedButton moveUpButton;
 	protected GuiTexturedButton moveDownButton;
 	protected GuiTexturedButton togglePackButton;
+	protected GuiTexturedButton refreshPackButton;
 	protected static Minecraft mc = Minecraft.getMinecraft(Minecraft.class);
 	public GuiMultiPack(GuiScreen parent) {
 		super(parent);
@@ -46,7 +47,8 @@ public class GuiMultiPack extends GuiScreen {
 		this.top = 44;
 		this.bottom = this.height - 28;
 		this.scrollRegionHeight = this.bottom - this.top;
-		this.controlList.add(new GuiButton(1, (width + centerWidth)/2 + (width - centerWidth)/4 - 100, height - 24,200, 20, I18n.getInstance().translateKey("gui.options.button.done")));
+		refreshPackButton = new GuiTexturedButton(8, "/assets/resourceful/gui/packManager.png", (width + centerWidth)/2 + (width - centerWidth)/4 - 100, height - 24,100, 0, 20, 20);
+		this.controlList.add(new GuiButton(1, refreshPackButton.getX() + refreshPackButton.getWidth() + 2, refreshPackButton.getY(), 200 - refreshPackButton.getWidth() - 2, 20, I18n.getInstance().translateKey("gui.options.button.done")));
 		this.controlList.add(new GuiButton(2, (width - centerWidth)/4 - 100, height - 24,200, 20, I18n.getInstance().translateKey("gui.options.page.texture_packs.button.open_folder")));
 
 		allPackBar = new GuiScrollbar(3, (width - centerWidth)/2 - 8, top, 8,bottom - top, packButtons.size() * 35);
@@ -62,9 +64,13 @@ public class GuiMultiPack extends GuiScreen {
 		this.controlList.add(moveUpButton);
 		this.controlList.add(moveDownButton);
 		this.controlList.add(togglePackButton);
-//		((GuiTexturedButtonAccessor)togglePackButton).setU(40);
+		this.controlList.add(refreshPackButton);
 
 		createButtons();
+	}
+	@Override
+	public void onClosed(){
+		TexturePackManager.refreshTextures();
 	}
 	@Override
 	public void tick() {
@@ -134,6 +140,9 @@ public class GuiMultiPack extends GuiScreen {
 				TexturePackManager.addPack(selectedTexturePackButton.texturePack);
 			}
 			createButtons();
+		}
+		if (button.id == 8){
+			TexturePackManager.refreshTextures();
 		}
 	}
 	private int doubleClickCounter = -1;

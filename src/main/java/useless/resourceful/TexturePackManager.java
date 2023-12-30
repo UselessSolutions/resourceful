@@ -37,18 +37,15 @@ public class TexturePackManager extends TexturePack {
 		}
 		selectedPacks.remove(pack);
 		selectedPacks.add(newIndex, pack);
-		refreshTextures();
 	}
 
 	public static void addPack(TexturePack pack){
 		TexturePackManager.selectedPacks.add(0,pack);
 		pack.readZipFile();
-		refreshTextures();
 	}
 	public static void removePack(TexturePack pack){
 		selectedPacks.remove(pack);
 		pack.closeTexturePackFile();
-		refreshTextures();
 	}
 	public static void refreshTextures(){
 		((TexturePackListAccessor)mc.texturePackList).setCurrentTexturePackName(getPackCollectionString());
@@ -136,6 +133,14 @@ public class TexturePackManager extends TexturePack {
 				}
 			}
 		}
-
+	}
+	public static void removeDeadPacks(){
+		List<TexturePack> _packs = new ArrayList<>();
+		for (TexturePack pack : selectedPacks){
+			if (pack instanceof TexturePackCustom && ((TexturePackCustomAccessor)pack).getFile().exists()){
+				_packs.add(pack);
+			}
+		}
+		selectedPacks = _packs;
 	}
 }

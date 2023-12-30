@@ -6,6 +6,7 @@ import org.lwjgl.input.Keyboard;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -25,6 +26,8 @@ public abstract class TexturePackListMixin {
 
 	@Shadow
 	private List<TexturePack> availableTexturePacks;
+	@Unique
+	private boolean hasLoadedOnce = false;
 
 	@Inject(method = "setTexturePack(Lnet/minecraft/client/render/texturepack/TexturePack;)V", at = @At("HEAD"), cancellable = true)
 	private void customTexturepackBehavior(TexturePack newPack, CallbackInfo ci){
@@ -44,6 +47,10 @@ public abstract class TexturePackListMixin {
 	@Inject(method = "updateAvailableTexturePacks()Z", at = @At("RETURN"))
 	private void neverUnsetSelected(CallbackInfoReturnable<Boolean> cir){
 		selectedTexturePack = new TexturePackManager();
-		TexturePackManager.loadPacksFromString(availableTexturePacks, (TexturePackList)(Object) this);
+		if (!hasLoadedOnce){
+			TexturePackManager.loadPacksFromString(availableTexturePacks, (TexturePackList)(Object) this);
+			hasLoadedOnce = true;
+		}
+		TexturePackManager.removeDeadPacks();
 	}
 }
