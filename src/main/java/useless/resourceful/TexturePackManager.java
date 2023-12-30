@@ -33,7 +33,7 @@ public class TexturePackManager extends TexturePack {
 			newIndex = 0;
 		}
 		if (newIndex >= selectedPacks.size()){
-			newIndex = selectedPacks.size();
+			newIndex = selectedPacks.size() - 1;
 		}
 		selectedPacks.remove(pack);
 		selectedPacks.add(newIndex, pack);
