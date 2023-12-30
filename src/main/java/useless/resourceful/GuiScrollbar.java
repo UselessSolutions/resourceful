@@ -24,19 +24,19 @@ public class GuiScrollbar extends GuiButton {
 		GL11.glDisable(3553);
 		int scrollBarHeightPx = getScrollBarHeightPixels();
 		int scrollBarY = getScrollBarY();
-		int scrollColorPrimary = 0xC0C0C0;
-		int scrollColorSecondary = 0x808080;
+		int scrollColorSecondary = 0xC0C0C0;
+		int scrollColorPrimary = 0x808080;
 		if (isHeld){
-			scrollColorPrimary = 0xA0A0C0;
-			scrollColorSecondary = 0x606080;
+			scrollColorSecondary = 0xA0A0C0;
+			scrollColorPrimary = 0x606080;
 		}
 		Tessellator t = Tessellator.instance;
 		t.startDrawingQuads();
 		t.setColorOpaque(0, 0, 0);
 		t.drawRectangle(xPosition, yPosition, 6, height);
-		t.setColorRGBA_I(scrollColorSecondary, 255);
-		t.drawRectangle(xPosition, scrollBarY, 6, scrollBarHeightPx);
 		t.setColorRGBA_I(scrollColorPrimary, 255);
+		t.drawRectangle(xPosition, scrollBarY, 6, scrollBarHeightPx);
+		t.setColorRGBA_I(scrollColorSecondary, 255);
 		t.drawRectangle(xPosition + 1, scrollBarY, 5, scrollBarHeightPx - 1);
 		t.draw();
 		GL11.glEnable(3553);

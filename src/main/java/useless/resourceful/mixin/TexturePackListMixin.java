@@ -12,6 +12,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import useless.resourceful.TexturePackManager;
 
+import java.util.List;
+import java.util.Objects;
+
 @Mixin(value = TexturePackList.class, remap = false)
 public abstract class TexturePackListMixin {
 	@Shadow
@@ -19,6 +22,9 @@ public abstract class TexturePackListMixin {
 	private TexturePack defaultTexturePack;
 	@Shadow
 	public TexturePack selectedTexturePack;
+
+	@Shadow
+	private List<TexturePack> availableTexturePacks;
 
 	@Inject(method = "setTexturePack(Lnet/minecraft/client/render/texturepack/TexturePack;)V", at = @At("HEAD"), cancellable = true)
 	private void customTexturepackBehavior(TexturePack newPack, CallbackInfo ci){
@@ -38,5 +44,6 @@ public abstract class TexturePackListMixin {
 	@Inject(method = "updateAvailableTexturePacks()Z", at = @At("RETURN"))
 	private void neverUnsetSelected(CallbackInfoReturnable<Boolean> cir){
 		selectedTexturePack = new TexturePackManager();
+		TexturePackManager.loadPacksFromString(availableTexturePacks, (TexturePackList)(Object) this);
 	}
 }

@@ -6,6 +6,7 @@ import net.minecraft.client.render.texturepack.Manifest;
 import net.minecraft.client.render.texturepack.TexturePack;
 import net.minecraft.client.render.texturepack.TexturePackCustom;
 import net.minecraft.client.render.texturepack.TexturePackDefault;
+import net.minecraft.client.render.texturepack.TexturePackList;
 import useless.resourceful.mixin.TexturePackCustomAccessor;
 import useless.resourceful.mixin.TexturePackListAccessor;
 
@@ -19,19 +20,17 @@ import java.util.zip.ZipEntry;
 
 public class TexturePackManager extends TexturePack {
 	public static Minecraft mc = Minecraft.getMinecraft(Minecraft.class);
+	public static List<TexturePack> selectedPacks = new ArrayList<>();
 	public TexturePackManager() {
 		this.fileName = "Manager";
 		this.manifest = new Manifest(null, Objects.requireNonNull(TexturePackDefault.class.getResourceAsStream("/manifest.json")));
 	}
-	public static List<TexturePack> selectedPacks = new ArrayList<>();
+
 	public static void addPack(TexturePack pack){
 		TexturePackManager.selectedPacks.add(0,pack);
 
-		((TexturePackListAccessor)mc.texturePackList).setCurrentTexturePackName("");
-		mc.gameSettings.skin.value = ((TexturePackListAccessor)mc.texturePackList).getCurrentTexturePackName();
-		mc.gameSettings.saveOptions();
 		pack.readZipFile();
-		TexturePackManager.refreshTextures();
+		refreshTextures();
 	}
 	public static void removePack(TexturePack pack){
 		selectedPacks.remove(pack);
@@ -39,6 +38,9 @@ public class TexturePackManager extends TexturePack {
 		refreshTextures();
 	}
 	public static void refreshTextures(){
+		((TexturePackListAccessor)mc.texturePackList).setCurrentTexturePackName(getPackCollectionString());
+		mc.gameSettings.skin.value = ((TexturePackListAccessor)mc.texturePackList).getCurrentTexturePackName();
+		mc.gameSettings.saveOptions();
 		mc.fontRenderer = new FontRenderer(mc.gameSettings, "/font/default.png", mc.renderEngine);
 		mc.renderEngine.refreshTexturesAndDisplayErrors();
 		mc.renderGlobal.loadRenderers();
@@ -103,5 +105,23 @@ public class TexturePackManager extends TexturePack {
 			}
 		}
 		return null;
+	}
+	public static String getPackCollectionString(){
+		String[] names = new String[selectedPacks.size()];
+		for (int i = 0; i < names.length; i++){
+			names[i] = selectedPacks.get(i).fileName;
+		}
+		return String.join("-splitter-",names);
+	}
+	public static void loadPacksFromString(List<TexturePack> availablePacks, TexturePackList texturePackList){
+		selectedPacks.clear();
+		String[] names = ((TexturePackListAccessor)texturePackList).getCurrentTexturePackName().split("-splitter-");
+		for (String name : names){
+			for (TexturePack pack : availablePacks){
+				if (pack.fileName.equals(name) && !selectedPacks.contains(pack) && !pack.fileName.equals("default") && !(pack instanceof TexturePackDefault)){
+					selectedPacks.add(pack);
+				}
+			}
+		}
 	}
 }
