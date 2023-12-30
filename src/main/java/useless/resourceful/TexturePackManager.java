@@ -53,6 +53,7 @@ public class TexturePackManager extends TexturePack {
 	}
 	public static void refreshTextures(boolean forceRefresh){
 		if (forceRefresh || isDirty){
+			isDirty = false;
 			((TexturePackListAccessor)mc.texturePackList).setCurrentTexturePackName(getPackCollectionString());
 			mc.gameSettings.skin.value = ((TexturePackListAccessor)mc.texturePackList).getCurrentTexturePackName();
 			mc.gameSettings.saveOptions();

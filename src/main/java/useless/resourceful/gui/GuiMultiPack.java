@@ -263,8 +263,8 @@ public class GuiMultiPack extends GuiScreen {
 
 		drawDefaultBackground();
 
-		drawStringCentered(fontRenderer, i18n.translateKey("resourceful.pack.label.available"), pageLeftButton.getX()/2, 20, 0xFFFFFF);
-		drawStringCentered(fontRenderer, i18n.translateKey("resourceful.pack.label.selected"),  width - ((width - pageRightButton.getX())/2), 20, 0xFFFFFF);
+		drawStringCentered(fontRenderer, i18n.translateKey("resourceful.pack.label.available"), pageLeftButton.getX()/2, pageLeftButton.getY() + pageLeftButton.getHeight() - fontRenderer.fontHeight, 0xFFFFFF);
+		drawStringCentered(fontRenderer, i18n.translateKey("resourceful.pack.label.selected"),  width - ((width - pageRightButton.getX())/2), pageRightButton.getY() + pageRightButton.getHeight() - fontRenderer.fontHeight, 0xFFFFFF);
 		super.drawScreen(mouseX, mouseY, partialTick);
 		this.drawStringCentered(this.fontRenderer, i18n.translateKey("gui.options.title"), this.width / 2, 5, 0xFFFFFF);
 		GL11.glEnable(3089);
