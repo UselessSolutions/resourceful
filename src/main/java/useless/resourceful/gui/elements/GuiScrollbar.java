@@ -1,4 +1,4 @@
-package useless.resourceful;
+package useless.resourceful.gui.elements;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;

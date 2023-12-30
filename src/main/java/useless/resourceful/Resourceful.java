@@ -7,6 +7,7 @@ import net.minecraft.client.gui.options.data.OptionsPages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import turniplabs.halplibe.util.ClientStartEntrypoint;
+import useless.resourceful.gui.GuiMultiPack;
 import useless.resourceful.mixin.OptionsCategoryAccessor;
 
 
