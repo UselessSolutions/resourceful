@@ -9,7 +9,8 @@
     "OptionsCategoryAccessor",
     "TexturePackCustomAccessor",
     "TexturePackListAccessor",
-    "TexturePackListMixin"
+    "TexturePackListMixin",
+    "TexturePackCustomMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -27,7 +27,7 @@ public class TexturePackManager extends TexturePack {
 	public static void addPack(TexturePack pack){
 		TexturePackManager.selectedPacks.add(0,pack);
 
-		((TexturePackListAccessor)mc.texturePackList).setCurrentTexturePackName("");;
+		((TexturePackListAccessor)mc.texturePackList).setCurrentTexturePackName("");
 		mc.gameSettings.skin.value = ((TexturePackListAccessor)mc.texturePackList).getCurrentTexturePackName();
 		mc.gameSettings.saveOptions();
 		pack.readZipFile();
