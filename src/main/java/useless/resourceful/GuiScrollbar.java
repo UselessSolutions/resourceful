@@ -11,37 +11,48 @@ public class GuiScrollbar extends GuiButton {
 	private Integer clickY;
 	private float scrollAmount = 0;
 	private boolean isHeld = false;
+	private int barPos = 0;
 	public GuiScrollbar(int id, int xPosition, int yPosition, int width, int height, float scrollAreaHeight){
         super(id, xPosition, yPosition, width, height, "");
         this.scrollAreaHeight = scrollAreaHeight;
     }
 	@Override
 	public void drawButton(Minecraft mc, int mouseX, int mouseY) {
+		mouseDragged(mc, mouseX, mouseY);
 		float scrollBarHeightPercent = height / scrollAreaHeight;
 		if (scrollBarHeightPercent > 1.0f) {
 			return;
 		}
 		GL11.glDisable(3553);
-		int scrollBarX = xPosition;
-		int scrollBarHeightPx = (int)(scrollBarHeightPercent * height);
-		if (scrollBarHeightPx < 32) {
-			scrollBarHeightPx = 32;
-		}
-		float scrollPercent = this.scrollAmount / (scrollAreaHeight - height);
-		int scrollBarY = (int)((float)yPosition + (float)(height - scrollBarHeightPx) * scrollPercent);
+		int scrollBarHeightPx = getScrollBarHeightPixels();
+		int scrollBarY = getScrollBarY();
 		Tessellator t = Tessellator.instance;
 		t.startDrawingQuads();
 		t.setColorOpaque(0, 0, 0);
-		t.drawRectangle(scrollBarX, yPosition, 6, height);
+		t.drawRectangle(xPosition, yPosition, 6, height);
 		t.setColorRGBA_I(0x808080, 255);
-		t.drawRectangle(scrollBarX, scrollBarY, 6, scrollBarHeightPx);
+		t.drawRectangle(xPosition, scrollBarY, 6, scrollBarHeightPx);
 		t.setColorRGBA_I(0xC0C0C0, 255);
-		t.drawRectangle(scrollBarX + 1, scrollBarY, 5, scrollBarHeightPx - 1);
+		t.drawRectangle(xPosition + 1, scrollBarY, 5, scrollBarHeightPx - 1);
 		t.draw();
 		GL11.glEnable(3553);
 	}
+	private int getScrollBarHeightPixels(){
+		int scrollBarHeightPx = (int) ((height / scrollAreaHeight) * height);
+		if (scrollBarHeightPx < 32) {
+			scrollBarHeightPx = 32;
+		}
+		return scrollBarHeightPx;
+	}
+	private int getScrollBarY(){
+		float scrollPercent = scrollAmount / (scrollAreaHeight - height);
+        return (int)((float)yPosition + (float)(height - getScrollBarHeightPixels()) * scrollPercent);
+	}
 	public void mouseDragged(Minecraft mc, int mouseX, int mouseY) {
-
+		if (isHeld){
+			scrollAmount = ((float) (mouseY - barPos - yPosition) /height) * scrollAreaHeight;
+			onScroll();
+		}
 	}
 
 	public void mouseReleased(int mouseX, int mouseY) {
@@ -56,6 +67,13 @@ public class GuiScrollbar extends GuiButton {
 				clickX = mouseX;
 				clickY = mouseY;
 				isHeld = true;
+				int scrollBarHeightPx = getScrollBarHeightPixels();
+				int scrollBarY = getScrollBarY();
+				if (mouseY > scrollBarY && mouseY < scrollBarY + scrollBarHeightPx){
+					barPos = mouseY - scrollBarY;
+				} else {
+					barPos = scrollBarHeightPx/2;
+				}
 			}
 			return true;
 		}

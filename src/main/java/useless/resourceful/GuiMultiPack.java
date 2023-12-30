@@ -3,6 +3,7 @@ package useless.resourceful;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.GuiSlider;
 import net.minecraft.client.gui.options.components.OptionsComponent;
 import net.minecraft.client.render.FontRenderer;
 import net.minecraft.client.render.Tessellator;
@@ -10,6 +11,7 @@ import net.minecraft.client.render.texturepack.TexturePack;
 import net.minecraft.client.util.helper.Colors;
 import net.minecraft.core.lang.I18n;
 import net.minecraft.core.net.command.TextFormatting;
+import net.minecraft.core.sound.SoundType;
 import net.minecraft.core.util.helper.Utils;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -92,6 +94,20 @@ public class GuiMultiPack extends GuiScreen {
 	}
 	@Override
 	public void mouseClicked(int mouseX, int mouseY, int mouseButton) {
+		if (mouseButton == 0) {
+			for (GuiButton guiButton : this.controlList) {
+				if (!guiButton.mouseClicked(mc, mouseX, mouseY)) continue;
+				if (guiButton instanceof GuiScrollbar){
+					this.selectedButton = guiButton;
+					if (guiButton.listener != null) {
+						guiButton.listener.listen(guiButton);
+					} else {
+						this.buttonPressed(guiButton);
+					}
+					return;
+				}
+			}
+		}
 		super.mouseClicked(mouseX, mouseY, mouseButton);
 		for (int i = 0; i < this.packButtons.size(); ++i) {
 			TexturePackButton button = this.packButtons.get(i);
@@ -148,7 +164,10 @@ public class GuiMultiPack extends GuiScreen {
 				barToScroll.scroll((float)Mouse.getDWheel() / -5.0f);
 			}
 		}
-
+	}
+	@Override
+	public void mouseMovedOrButtonReleased(int mouseX, int mouseY, int mouseButton) {
+		super.mouseMovedOrButtonReleased(mouseX, mouseY, mouseButton);
 	}
 	@Override
 	public void drawDefaultBackground() {
