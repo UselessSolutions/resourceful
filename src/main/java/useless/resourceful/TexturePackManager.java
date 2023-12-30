@@ -25,10 +25,23 @@ public class TexturePackManager extends TexturePack {
 		this.fileName = "Manager";
 		this.manifest = new Manifest(null, Objects.requireNonNull(TexturePackDefault.class.getResourceAsStream("/manifest.json")));
 	}
+	public static void movePack(TexturePack pack, int offset){
+		if (!selectedPacks.contains(pack)) return;
+		int currentIndex = selectedPacks.indexOf(pack);
+		int newIndex = currentIndex + offset;
+		if (newIndex < 0){
+			newIndex = 0;
+		}
+		if (newIndex >= selectedPacks.size()){
+			newIndex = selectedPacks.size();
+		}
+		selectedPacks.remove(pack);
+		selectedPacks.add(newIndex, pack);
+		refreshTextures();
+	}
 
 	public static void addPack(TexturePack pack){
 		TexturePackManager.selectedPacks.add(0,pack);
-
 		pack.readZipFile();
 		refreshTextures();
 	}
@@ -123,5 +136,6 @@ public class TexturePackManager extends TexturePack {
 				}
 			}
 		}
+
 	}
 }

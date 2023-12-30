@@ -17,8 +17,7 @@ public class GuiScrollbar extends GuiButton {
 	@Override
 	public void drawButton(Minecraft mc, int mouseX, int mouseY) {
 		mouseDragged(mc, mouseX, mouseY);
-		float scrollBarHeightPercent = height / scrollAreaHeight;
-		if (scrollBarHeightPercent > 1.0f) {
+		if (getScrollBarPercentage() > 1.0f) {
 			return;
 		}
 		GL11.glDisable(3553);
@@ -51,6 +50,9 @@ public class GuiScrollbar extends GuiButton {
 	private int getScrollBarY(){
 		float scrollPercent = scrollAmount / (scrollAreaHeight - height);
         return (int)((float)yPosition + (float)(height - getScrollBarHeightPixels()) * scrollPercent);
+	}
+	public float getScrollBarPercentage(){
+		return height / scrollAreaHeight;
 	}
 	public void mouseDragged(Minecraft mc, int mouseX, int mouseY) {
 		if (isHeld){
@@ -104,4 +106,5 @@ public class GuiScrollbar extends GuiButton {
 	public float getScrollAmount(){
 		return scrollAmount;
 	}
+
 }

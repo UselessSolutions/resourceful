@@ -3,6 +3,7 @@ package useless.resourceful.gui;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.GuiTexturedButton;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.texturepack.TexturePack;
 import net.minecraft.core.lang.I18n;
@@ -13,6 +14,7 @@ import org.lwjgl.opengl.GL11;
 import useless.resourceful.TexturePackManager;
 import useless.resourceful.gui.elements.GuiScrollbar;
 import useless.resourceful.gui.elements.GuiTexturePackButton;
+import useless.resourceful.mixin.GuiTexturedButtonAccessor;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -26,10 +28,15 @@ public class GuiMultiPack extends GuiScreen {
 	private int updateTickCount = 0;
 	private int top;
 	private int bottom;
-	private final int sidePadding = 5;
-	private final int centerWidth = 20;
+	private final int sidePadding = 4;
+	private final int centerWidth = 22;
 	protected GuiScrollbar allPackBar;
 	protected GuiScrollbar selectedPackBar;
+	protected GuiTexturePackButton selectedTexturePackButton;
+	protected TexturePack selectedTexturesPack;
+	protected GuiTexturedButton moveUpButton;
+	protected GuiTexturedButton moveDownButton;
+	protected GuiTexturedButton togglePackButton;
 	protected static Minecraft mc = Minecraft.getMinecraft(Minecraft.class);
 	public GuiMultiPack(GuiScreen parent) {
 		super(parent);
@@ -41,10 +48,22 @@ public class GuiMultiPack extends GuiScreen {
 		this.scrollRegionHeight = this.bottom - this.top;
 		this.controlList.add(new GuiButton(1, (width + centerWidth)/2 + (width - centerWidth)/4 - 100, height - 24,200, 20, I18n.getInstance().translateKey("gui.options.button.done")));
 		this.controlList.add(new GuiButton(2, (width - centerWidth)/4 - 100, height - 24,200, 20, I18n.getInstance().translateKey("gui.options.page.texture_packs.button.open_folder")));
+
 		allPackBar = new GuiScrollbar(3, (width - centerWidth)/2 - 8, top, 8,bottom - top, packButtons.size() * 35);
 		selectedPackBar = new GuiScrollbar(4, width - 8, top, 8, bottom - top, selectedPackButtons.size() * 35);
 		this.controlList.add(allPackBar);
 		this.controlList.add(selectedPackBar);
+
+		int xPos = width/2 - centerWidth/2 + (centerWidth-20)/2;
+		moveUpButton = new GuiTexturedButton(5, "/assets/resourceful/gui/packManager.png", xPos, height/2 - 22,20, 0, 20, 20);
+		moveDownButton = new GuiTexturedButton(6, "/assets/resourceful/gui/packManager.png", xPos, height/2,60, 0, 20, 20);
+		togglePackButton = new GuiTexturedButton(7, "/assets/resourceful/gui/packManager.png", xPos, height/2 + 22,40, 0, 20, 20);
+		togglePackButton.enabled = false;
+		this.controlList.add(moveUpButton);
+		this.controlList.add(moveDownButton);
+		this.controlList.add(togglePackButton);
+//		((GuiTexturedButtonAccessor)togglePackButton).setU(40);
+
 		createButtons();
 	}
 	@Override
@@ -59,6 +78,10 @@ public class GuiMultiPack extends GuiScreen {
 	}
 
 	public void createButtons() {
+		if (selectedTexturePackButton != null){
+			selectedTexturesPack = selectedTexturePackButton.texturePack;
+		}
+		selectedTexturePackButton = null;
 		this.packButtons.clear();
 		this.selectedPackButtons.clear();
 		List<TexturePack> texturePacks = mc.texturePackList.availableTexturePacks();
@@ -66,15 +89,23 @@ public class GuiMultiPack extends GuiScreen {
 
 		for (int i = 0; i < TexturePackManager.selectedPacks.size(); ++i) {
 			TexturePack texturePack = TexturePackManager.selectedPacks.get(i);
-			this.selectedPackButtons.add(new GuiTexturePackButton(i, (width + centerWidth)/2 + sidePadding, 0, width/2 - centerWidth/2 - sidePadding - selectedPackBar.getWidth(), 32, texturePack));
+			GuiTexturePackButton button = new GuiTexturePackButton(i, (width + centerWidth)/2 + sidePadding, 0, width/2 - centerWidth/2 - (sidePadding * 2) - selectedPackBar.getWidth(), 32, texturePack);
+			if (texturePack == selectedTexturesPack){
+				selectedTexturePackButton = button;
+			}
+			this.selectedPackButtons.add(button);
 		}
-		selectedPackButtons.add(new GuiTexturePackButton(selectedPackButtons.size(), (width + centerWidth)/2 + sidePadding, 0, width/2 - centerWidth/2 - sidePadding - selectedPackBar.getWidth(), 32, mc.texturePackList.getDefaultTexturePack()));
+		selectedPackButtons.add(new GuiTexturePackButton(selectedPackButtons.size(), (width + centerWidth)/2 + sidePadding, 0, width/2 - centerWidth/2 - (sidePadding * 2) - selectedPackBar.getWidth(), 32, mc.texturePackList.getDefaultTexturePack()));
 
 		for (int i = 0; i < texturePacks.size(); ++i) {
 			TexturePack texturePack = texturePacks.get(i);
 			if (texturePack == mc.texturePackList.getDefaultTexturePack()) continue;
 			if (TexturePackManager.selectedPacks.contains(texturePack)) continue;
-			this.packButtons.add(new GuiTexturePackButton(i, sidePadding,(int) (top + 3 + i * 35 - allPackBar.getScrollAmount()), width/2 - centerWidth/2 - sidePadding - allPackBar.getWidth(), 32, texturePack));
+			GuiTexturePackButton button = new GuiTexturePackButton(i, sidePadding,(int) (top + 3 + i * 35 - allPackBar.getScrollAmount()), width/2 - centerWidth/2 - (sidePadding * 2) - allPackBar.getWidth(), 32, texturePack);
+			if (texturePack == selectedTexturesPack){
+				selectedTexturePackButton = button;
+			}
+			this.packButtons.add(button);
 		}
 		allPackBar.setScrollAreaHeight(packButtons.size() * 35);
 		selectedPackBar.setScrollAreaHeight(selectedPackButtons.size() * 35);
@@ -86,6 +117,22 @@ public class GuiMultiPack extends GuiScreen {
 		}
 		if (button.id == 2){
 			Utils.openDirectory(new File(mc.getMinecraftDir(), "texturepacks"));
+		}
+		if (button.id == 5){
+			TexturePackManager.movePack(selectedTexturePackButton.texturePack, -1);
+			createButtons();
+		}
+		if (button.id == 6){
+			TexturePackManager.movePack(selectedTexturePackButton.texturePack, 1);
+			createButtons();
+		}
+		if (button.id == 7){
+			if (selectedPackButtons.contains(selectedTexturePackButton)){
+				TexturePackManager.removePack(selectedTexturePackButton.texturePack);
+			} else {
+				TexturePackManager.addPack(selectedTexturePackButton.texturePack);
+			}
+			createButtons();
 		}
 	}
 	@Override
@@ -107,19 +154,36 @@ public class GuiMultiPack extends GuiScreen {
 		super.mouseClicked(mouseX, mouseY, mouseButton);
         for (GuiTexturePackButton button : this.packButtons) {
             if (!button.mouseClicked(mc, mouseX, mouseY)) continue;
-            TexturePackManager.addPack(button.texturePack);
-            createButtons();
+			if (button.texturePack == mc.texturePackList.getDefaultTexturePack()) continue;
+			selectedTexturePackButton = button;
+//            TexturePackManager.addPack(button.texturePack);
+//            createButtons();
             return;
         }
         for (GuiTexturePackButton button : this.selectedPackButtons) {
             if (!button.mouseClicked(mc, mouseX, mouseY)) continue;
-            TexturePackManager.removePack(button.texturePack);
-            createButtons();
+			if (button.texturePack == mc.texturePackList.getDefaultTexturePack()) continue;
+			selectedTexturePackButton = button;
+//            TexturePackManager.removePack(button.texturePack);
+//            createButtons();
             return;
         }
 	}
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTick) {
+		moveUpButton.enabled = false;
+		moveDownButton.enabled = false;
+		togglePackButton.enabled = false;
+		if (selectedTexturePackButton != null){
+			togglePackButton.enabled = true;
+			((GuiTexturedButtonAccessor)togglePackButton).setU(40);
+			if (selectedPackButtons.contains(selectedTexturePackButton)){
+				moveUpButton.enabled = true;
+				moveDownButton.enabled = true;
+				((GuiTexturedButtonAccessor)togglePackButton).setU(80);
+			}
+		}
+
 		scroll(mouseX, mouseY);
 
 		drawDefaultBackground();
@@ -136,12 +200,30 @@ public class GuiMultiPack extends GuiScreen {
 			GuiTexturePackButton button = this.packButtons.get(i);
 			button.setY((int) (top + 3 + i * 35 - allPackBar.getScrollAmount()));
 			button.drawButton(mc, mouseX, mouseY);
+			if (button == selectedTexturePackButton){
+				drawBoxRoundButton(button);
+			}
 		}
 		for (int i = 0; i < this.selectedPackButtons.size(); ++i) {
 			GuiTexturePackButton button = this.selectedPackButtons.get(i);
 			button.setY((int) (top + 3 + i * 35 - selectedPackBar.getScrollAmount()));
 			button.drawButton(mc, mouseX, mouseY);
+			if (button == selectedTexturePackButton){
+				drawBoxRoundButton(button);
+			}
 		}
+	}
+	private void drawBoxRoundButton(GuiButton button){
+		int color = 0xFFFFFFFF;
+		int lineWidth = 1;
+		int xMin = button.getX();
+		int xMax = xMin + button.getWidth();
+		int yMin = button.getY();
+		int yMax = yMin + button.getHeight();
+		drawRect(xMin + lineWidth, yMin + lineWidth, xMax - lineWidth, yMin, color); // Top
+		drawRect(xMin + lineWidth, yMin, xMin, yMax - lineWidth, color); // Left
+		drawRect(xMin, yMax, xMax - lineWidth, yMax - lineWidth, color); // Bottom
+		drawRect(xMax, yMin, xMax - lineWidth, yMax, color); // Right
 	}
 	public void scroll(int mouseX, int mouseY){
 		GuiScrollbar barToScroll = null;
