@@ -119,6 +119,7 @@ public class GuiMultiPack extends GuiScreen {
 	}
 	@Override
 	protected void buttonPressed(GuiButton button) {
+		boolean isShifted = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT);
 		if (button.id == 1){
 			mc.displayGuiScreen(this.getParentScreen());
 		}
@@ -126,11 +127,11 @@ public class GuiMultiPack extends GuiScreen {
 			Utils.openDirectory(new File(mc.getMinecraftDir(), "texturepacks"));
 		}
 		if (button.id == 5){
-			TexturePackManager.movePack(selectedTexturePackButton.texturePack, -1);
+			TexturePackManager.movePack(selectedTexturePackButton.texturePack, isShifted ? -9999 : -1);
 			createButtons();
 		}
 		if (button.id == 6){
-			TexturePackManager.movePack(selectedTexturePackButton.texturePack, 1);
+			TexturePackManager.movePack(selectedTexturePackButton.texturePack, isShifted ? 9999 : 1);
 			createButtons();
 		}
 		if (button.id == 7){
