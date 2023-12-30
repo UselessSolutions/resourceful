@@ -8,6 +8,8 @@ import net.minecraft.client.gui.options.GuiOptions;
 import net.minecraft.client.gui.options.data.OptionsPage;
 import net.minecraft.client.gui.options.data.OptionsPageRegistry;
 import net.minecraft.client.gui.options.data.OptionsPages;
+import net.minecraft.client.gui.popup.GuiPopup;
+import net.minecraft.client.gui.popup.PopupBuilder;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.texturepack.TexturePack;
 import net.minecraft.core.lang.I18n;
@@ -47,6 +49,7 @@ public class GuiMultiPack extends GuiScreen {
 	GuiButton pageRightButton;
 	private final OptionsPage selectedPage;
 	protected static Minecraft mc = Minecraft.getMinecraft(Minecraft.class);
+	protected OptionsPage nextPage = null;
 	public GuiMultiPack(GuiScreen parent) {
 		super(parent);
 		this.selectedPage = OptionsPages.TEXTURE_PACKS;
@@ -64,6 +67,8 @@ public class GuiMultiPack extends GuiScreen {
 		this.controlList.add(this.pageButton);
 		this.controlList.add(pageLeftButton);
 		this.controlList.add(pageRightButton);
+		GuiTexturedButton searchButton = new GuiTexturedButton(23, "/gui/gui.png", this.width - 20 - 4, 20, 20, 86, 20, 20);
+		this.controlList.add(searchButton);
 
 		refreshPackButton = new GuiTexturedButton(8, "/assets/resourceful/gui/packManager.png", (width + centerWidth)/2 + (width - centerWidth)/4 - 100, height - 24,100, 0, 20, 20);
 		this.controlList.add(new GuiButton(1, refreshPackButton.getX() + refreshPackButton.getWidth() + 2, refreshPackButton.getY(), 200 - refreshPackButton.getWidth() - 2, 20, i18n.translateKey("gui.options.button.done")));
@@ -163,11 +168,26 @@ public class GuiMultiPack extends GuiScreen {
 		if (button.id == 8){
 			TexturePackManager.refreshTextures(true);
 		}
+		if (button.id == 20){
+			String[] buttons = new String[OptionsPageRegistry.getInstance().getPages().size()];
+			for (int i = 0; i < buttons.length; ++i) {
+				buttons[i] = I18n.getInstance().translateKey(OptionsPageRegistry.getInstance().getPages().get(i).getTranslationKey());
+			}
+			GuiPopup popup = new PopupBuilder(this, 148).closeOnEsc(0).closeOnClickOut(0).withLabel("gui.options.label.select_page").withList("page", 142, buttons, null, OptionsPageRegistry.getInstance().getPageIndex(this.selectedPage), true).withOnCloseListener((statusCode, results) -> {
+				if (statusCode != 0) {
+					nextPage = OptionsPageRegistry.getInstance().getPages().get((Integer)results.get("page"));
+				}
+			}).build();
+			mc.displayGuiScreen(popup);
+		}
 		if (button.id == 21){
 			switchPage(-1);
 		}
 		if (button.id == 22){
 			switchPage(1);
+		}
+		if (button.id == 23){
+			mc.displayGuiScreen(new GuiOptions(getParentScreen(), mc.gameSettings, OptionsPages.SEARCH));
 		}
 	}
 	private void switchPage(int offset){
@@ -221,6 +241,10 @@ public class GuiMultiPack extends GuiScreen {
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTick) {
 		I18n i18n = I18n.getInstance();
+
+		if (nextPage != null){
+			mc.displayGuiScreen(new GuiOptions(getParentScreen(), mc.gameSettings, nextPage));
+		}
 
 		moveUpButton.enabled = false;
 		moveDownButton.enabled = false;

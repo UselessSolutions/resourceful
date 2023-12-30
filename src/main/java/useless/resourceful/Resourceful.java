@@ -27,7 +27,7 @@ public class Resourceful implements ClientStartEntrypoint {
 		mc.texturePackList.selectedTexturePack = new TexturePackManager();
 		OptionsPages.TEXTURE_PACKS.getComponents().removeIf(component -> component instanceof OptionsCategory && ((OptionsCategoryAccessor)component).getTranslationKey().equals("gui.options.page.texture_packs.category.texture_packs")); // Remove vanilla pack list component
 		OptionsPages.TEXTURE_PACKS.withComponent(new RedirectComponent("resourceful.pack.manager.open", () -> {
-			mc.displayGuiScreen(new GuiMultiPack(mc.currentScreen));
+			mc.displayGuiScreen(new GuiMultiPack(mc.currentScreen.getParentScreen()));
 		}));
 		LOGGER.info("Resourceful initialized.");
 	}
