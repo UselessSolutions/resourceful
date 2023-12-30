@@ -21,6 +21,7 @@ import java.util.zip.ZipEntry;
 public class TexturePackManager extends TexturePack {
 	public static Minecraft mc = Minecraft.getMinecraft(Minecraft.class);
 	public static List<TexturePack> selectedPacks = new ArrayList<>();
+	public static boolean isDirty = false;
 	public TexturePackManager() {
 		this.fileName = "Manager";
 		this.manifest = new Manifest(null, Objects.requireNonNull(TexturePackDefault.class.getResourceAsStream("/manifest.json")));
@@ -37,25 +38,30 @@ public class TexturePackManager extends TexturePack {
 		}
 		selectedPacks.remove(pack);
 		selectedPacks.add(newIndex, pack);
+		isDirty = true;
 	}
 
 	public static void addPack(TexturePack pack){
 		TexturePackManager.selectedPacks.add(0,pack);
 		pack.readZipFile();
+		isDirty = true;
 	}
 	public static void removePack(TexturePack pack){
 		selectedPacks.remove(pack);
 		pack.closeTexturePackFile();
+		isDirty = true;
 	}
-	public static void refreshTextures(){
-		((TexturePackListAccessor)mc.texturePackList).setCurrentTexturePackName(getPackCollectionString());
-		mc.gameSettings.skin.value = ((TexturePackListAccessor)mc.texturePackList).getCurrentTexturePackName();
-		mc.gameSettings.saveOptions();
-		mc.fontRenderer = new FontRenderer(mc.gameSettings, "/font/default.png", mc.renderEngine);
-		mc.renderEngine.refreshTexturesAndDisplayErrors();
-		mc.renderGlobal.loadRenderers();
-		mc.currentScreen.refreshFontRenderer();
-		mc.renderEngine.updateDynamicTextures();
+	public static void refreshTextures(boolean forceRefresh){
+		if (forceRefresh || isDirty){
+			((TexturePackListAccessor)mc.texturePackList).setCurrentTexturePackName(getPackCollectionString());
+			mc.gameSettings.skin.value = ((TexturePackListAccessor)mc.texturePackList).getCurrentTexturePackName();
+			mc.gameSettings.saveOptions();
+			mc.fontRenderer = new FontRenderer(mc.gameSettings, "/font/default.png", mc.renderEngine);
+			mc.renderEngine.refreshTexturesAndDisplayErrors();
+			mc.renderGlobal.loadRenderers();
+			mc.currentScreen.refreshFontRenderer();
+			mc.renderEngine.updateDynamicTextures();
+		}
 	}
 	@Override
 	public boolean hasFile(String string) {
