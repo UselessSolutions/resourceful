@@ -53,24 +53,22 @@ public class GuiTexturePackSideBar extends GuiScreen {
 		this.getParentScreen().drawScreen(-1, -1, partialTick);
 		int color = this.mc.gameSettings.guiBackgroundColor.value.getARGB();
 		this.drawGradientRect(0, 0, this.width, this.height, color, color);
-		if (mc.theWorld == null) {
-			Tessellator tessellator = Tessellator.instance;
-			GL11.glBindTexture(3553, mc.renderEngine.getTexture("/gui/background.png"));
-			GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-			float f1 = 32.0f;
-			tessellator.startDrawingQuads();
 
-			tessellator.setColorOpaque_I(0x404040);
-			// Left
-			tessellator.addVertexWithUV(0.0, height, 0.0, 0.0, (float)(height) / f1);
-			tessellator.addVertexWithUV(xSize, height, 0.0, xSize / f1, (float)(height) / f1);
-			tessellator.addVertexWithUV(xSize, 0, 0.0, xSize / f1, 0);
-			tessellator.addVertexWithUV(0.0, 0, 0.0, 0.0, 0);
+		Tessellator tessellator = Tessellator.instance;
+		GL11.glBindTexture(3553, mc.renderEngine.getTexture("/gui/background.png"));
+		GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+		float f1 = 32.0f;
+		tessellator.startDrawingQuads();
 
-			tessellator.draw();
-		} else {
-			this.drawRect(0, 0, xSize, height, 0x5F000000);
-		}
+		tessellator.setColorOpaque_I(0x404040);
+		// Left
+		tessellator.addVertexWithUV(0.0, height, 0.0, 0.0, (float)(height) / f1);
+		tessellator.addVertexWithUV(xSize, height, 0.0, xSize / f1, (float)(height) / f1);
+		tessellator.addVertexWithUV(xSize, 0, 0.0, xSize / f1, 0);
+		tessellator.addVertexWithUV(0.0, 0, 0.0, 0.0, 0);
+
+		tessellator.draw();
+
 		super.drawScreen(mouseX, mouseY, partialTick);
 		drawPageItems(sidePadding, parentButton.getY() + parentButton.getHeight() + 8, xSize - sidePadding * 2, mouseX, mouseY);
 		drawBox(0, 0, xSize, ySize, -6250336, 1);
@@ -88,7 +86,7 @@ public class GuiTexturePackSideBar extends GuiScreen {
 			closeMenu();
 		}
 		super.mouseClicked(mouseX, mouseY, mouseButton);
-		int componentY = parentButton.getY() + parentButton.getHeight();
+		int componentY = parentButton.getY() + parentButton.getHeight() + 8;
 		for (OptionsComponent component : components) {
 			if (mouseX >= 0 && mouseX <= xSize && mouseY >= componentY && mouseY <= componentY + component.getHeight()) {
 				component.onMouseClick(mouseButton, 0, componentY, xSize, mouseX, mouseY - componentY);
