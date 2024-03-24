@@ -1,5 +1,6 @@
 package useless.resourceful;
 
+import com.google.common.collect.Lists;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.render.FontRenderer;
 import net.minecraft.client.render.texturepack.Manifest;
@@ -66,7 +67,7 @@ public class TexturePackManager extends TexturePack {
 	}
 	@Override
 	public boolean hasFile(String string) {
-		for (TexturePack pack : selectedPacks){
+		for (TexturePack pack : Lists.reverse(selectedPacks)){
 			if (pack.hasFile(string)){
 				return true;
 			}
@@ -84,7 +85,7 @@ public class TexturePackManager extends TexturePack {
 	}
 	public InputStream getResourceAsStream(String s) {
 		InputStream in;
-		for (TexturePack pack : selectedPacks){
+		for (TexturePack pack : Lists.reverse(selectedPacks)){
 			if (pack instanceof TexturePackCustom){
 				in = customPackStream((TexturePackCustomAccessor)pack, s);
 				if (in != null){

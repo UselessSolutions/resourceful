@@ -4,14 +4,13 @@
   "package": "useless.resourceful.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
+    "GuiOptionsMixin"
   ],
   "client": [
     "OptionsCategoryAccessor",
     "TexturePackCustomAccessor",
-    "TexturePackCustomMixin",
     "TexturePackListAccessor",
-    "TexturePackListMixin",
-    "GuiTexturedButtonAccessor"
+    "TexturePackListMixin"
   ],
   "injectors": {
     "defaultRequire": 1

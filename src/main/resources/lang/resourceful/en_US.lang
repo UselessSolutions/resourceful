@@ -1,3 +1,3 @@
-resourceful.pack.manager.open=Open TexturePack Manager
-resourceful.pack.label.available=Available packs
-resourceful.pack.label.selected=Selected packs
+gui.options.page.texture_packs.category.texture_packs.available=Available Texture Packs
+gui.options.page.texture_packs.category.texture_packs.selected=Selected Texture Packs
+gui.options.page.texture_packs.button.apply=Apply Texture Packs
